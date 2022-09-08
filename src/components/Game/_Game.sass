@@ -1,0 +1,55 @@
+@use '../../common/sass/_sfx' as sfx
+@use '../../common/sass/_colors' as color
+
+
+.game-container
+  margin: 3rem auto
+  padding: 2rem
+  min-width: 210px
+  max-width: 30rem
+  display: flex
+  flex-direction: column
+  box-shadow: sfx.$shadow
+  small
+    text-align: center
+
+  input
+    height: 2.5rem
+    font-size: 2rem
+    text-align: center
+
+  input::-webkit-input-placeholder
+    color: color.$place-holder
+    font-size: 18px
+
+  .token
+    display: flex
+    flex-direction: column
+    align-content: center
+    justify-content: center
+    margin: 1rem
+    & img
+      max-height: 100px
+      object-fit: scale-down
+    & small
+      text-transform: uppercase
+      font-weight: bolder
+      font-size: 1.3rem
+      margin-top: 1rem
+      color: color.$primary
+
+  .actions
+    display: inherit
+    flex-direction: column
+    padding: 1.5rem 6rem
+    min-width: 60%
+    & button
+      margin: 0.5rem 0rem  
+    
+
+  footer
+    display: flex
+    justify-content: space-between
+    margin-top: 1.5rem
+  
+  
