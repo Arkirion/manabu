@@ -1,9 +1,10 @@
 import React from "react";
 import './_Button.sass';
 
-export default function Button({ text, secondary = false, handler }) {
+export default function Button({ text, secondary = false, handler, disabled = false, title = '' }) {
   const secondaryClass = secondary ? '--secondary' : ''; 
-  return <button className={`button${secondaryClass}`} onClick={handler}>
+  const disableClass = disabled ? 'disabled': ''
+  return <button className={`button${secondaryClass} ${disableClass}`} title={title} onClick={handler} disabled={disabled} >
     {text}
   </button>;
 }

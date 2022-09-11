@@ -7,13 +7,13 @@ function Header() {
   return (
     <header>
       <div className="logo"> <img src={logo} alt="" /> </div>
-      <nav>
+      {/* <nav>
         <ul>
           <li>DICCIONARIO</li>
           <li>LETRA ALEATORIA</li>
           <li>PALABRA ALEATORIA</li>
         </ul>
-      </nav>
+      </nav> */}
     </header>
   );
 }
