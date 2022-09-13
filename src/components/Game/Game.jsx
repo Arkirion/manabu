@@ -5,7 +5,7 @@ import { hiragana } from "../../common/utils/maps";
 import { suffleHiragana, sanatizeImageName } from "../../common/utils/utils";
 
 function Game() {
-  const route = "/src/assets/hiragana/";
+  const route = "/assets/hiragana/"; // https://vitejs.dev/guide/assets.html#the-public-directory
   const [imageName, setImageName] = useState("a");
   const [suffle, setSuffle] = useState([]);
   const [hidden, setHidden] = useState(true);
