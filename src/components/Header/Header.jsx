@@ -1,4 +1,5 @@
 import React from "react";
+import { logoImageRoute } from "../../common/utils/constants";
 import './_Header.sass'
 
 function Header() {
@@ -8,7 +9,7 @@ function Header() {
 
   return (
     <header>
-      <div className="logo"> <img src={'/public/logo.png'} alt="" /> </div>
+      <div className="logo"> <img src={logoImageRoute} alt="" /> </div>
       <nav>
         <ul>
           <li onClick={(e) => openInNewTab('https://www.nhk.or.jp/lesson/es/letters/hiragana.html')}>DICCIONARIO</li>
