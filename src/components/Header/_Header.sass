@@ -1,6 +1,6 @@
 @use '../../common/sass/_colors' as color
 @use '../../common/sass/_sfx' as sfx
-
+@use '../../common/sass/_mediaQueries' as *
   
 header
   display: flex
@@ -10,20 +10,23 @@ header
   padding: 0
   align-items: center
   box-shadow: sfx.$shadow
+  background: color.$white
   .logo
     display: flex
     flex-grow: 0
-    margin: 0rem 0.5rem
+    margin: 0.3rem 0.5rem
   nav
     margin:0
     padding: 0
     ul
       display: flex
       list-style-type: none
+      
       li
         margin: 0rem 1rem
         font-weight: bold
         color: color.$primary
         cursor: pointer
+
         &:first-child
           color: color.$black

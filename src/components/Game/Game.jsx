@@ -48,7 +48,7 @@ function Game() {
   };
 
   return (
-    <div className="game-container">
+    <main className="game-container">
       <small>
         {" Escribe el nombre de la letra en hiragana e intenta adivinar ! "}
       </small>
@@ -60,7 +60,7 @@ function Game() {
               {sanatizeImageName(imageName)}
             </small>
           </div>
-          <main className="actions">
+          <section className="actions">
             <Button text="REVELAR" handler={() => handleShowHint()} />
             <legend>Escribe letra en hiragana.</legend>
             <input
@@ -80,7 +80,7 @@ function Game() {
               data-next-id="next"
               title="Tienes que adivinar o revelar la letra para avanzar."
             />
-          </main>
+          </section>
         </>
       ) : (
         <span>
@@ -96,7 +96,7 @@ function Game() {
           {hiragana.length - suffle.length} / {hiragana.length}
         </span>
       </footer>
-    </div>
+    </main>
   );
 }
 
