@@ -1,14 +1,14 @@
 import React, { useRef } from "react";
+import { motion } from "framer-motion";
 import "./_Game.sass";
-// components
+
 import Button from "../Button/Button";
 
-// utils
 import { hiragana } from "../../common/utils/maps";
 import { sanatizeImageName } from "../../common/utils/utils";
 import { hiraganaImageRoute } from "../../common/utils/constants";
+import { hiddingVariants } from "../../common/utils/animations";
 
-// custom hooks
 import { useSuffle } from "../../common/hooks/useSuffle";
 import { useAnswer } from "../../common/hooks/useAnswer";
 
@@ -55,12 +55,23 @@ function Game() {
       {suffle.length !== 0 ? (
         <>
           <div className="token">
-            <img src={`${hiraganaImageRoute}${imageName}.png`} alt="" />
-            <small className={showHint ? "" : "hidden"}>
+            <motion.img
+              src={`${hiraganaImageRoute}${imageName}.png`}
+              key={suffle} // add key to re-render and trigger animation
+              initial={{ y: -30 }}
+              animate={{ y: 0 }}
+              exit={{ y: 30 }}
+              transition={{ delay: 0.01 }}
+            />
+            <motion.small
+              variants={hiddingVariants}
+              initial={{ opacity: 0 }}
+              animate={!showHint ? "hidden" : "visible"}
+            >
               {sanatizeImageName(imageName)}
-            </small>
+            </motion.small>
           </div>
-          <section className="actions">
+          <section>
             <Button text="REVELAR" handler={() => handleShowHint()} />
             <legend>Escribe letra en hiragana.</legend>
             <input
