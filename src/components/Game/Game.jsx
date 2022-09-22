@@ -14,32 +14,40 @@ import { useAnswer } from "../../common/hooks/useAnswer";
 
 function Game() {
   const { suffle, imageName, suffleFromScratch, nextLetter } = useSuffle();
-  const [gameMode, setGameMode] = useState('reveal');
+  // const [gameMode, setGameMode] = useState('reveal');
 
 
   const {
     answer,
-    isCorrectAnswer,
+    gameMode,
+    enableNextbutton,
     showHint,
+    handleGameMode,
     resetAnswer,
     checkAnswer,
     handleShowHint,
-    handleShowIsCorrectAnswer
+    handleEnableNextbutton
   } = useAnswer();
   const inputRef = useRef(null);
 
 
-  const handleGameMode = (e) => {
+  const changeGameMode = (e) => {
     const mode = e.target.value;
-    setGameMode(mode);
-    console.log(mode)
+    handleGameMode(mode);
     suffleFromScratch();
+
+    // esto podria ir dentro del useAnswer?????
     if (mode === 'hit') {
-      handleShowIsCorrectAnswer(true)
+      // handleEnableNextbutton(true)
+      resetAnswer({})
+      handleEnableNextbutton(true)
     } 
+    console.log(mode);
 
     if (mode === 'reveal') {
-      handleShowIsCorrectAnswer(false)
+      console.log(2, mode);
+
+      handleEnableNextbutton(false)
     } 
   };
 
@@ -52,6 +60,7 @@ function Game() {
   const handleNextLetter = () => {
     nextLetter(suffle);
     inputRef.current.focus();
+
     resetAnswer({});
   };
 
@@ -59,16 +68,18 @@ function Game() {
     const enterKey = e.keyCode == 13;
     const shiftKey = e.keyCode == 16;
 
+    // esto creo NO puede ir dentro del useAnswer
     if (gameMode === 'reveal') {
-      if (enterKey && !isCorrectAnswer) resetAnswer({});
-      if (enterKey && isCorrectAnswer) handleNextLetter();
+      if (enterKey && !enableNextbutton) resetAnswer({});
+      if (enterKey && enableNextbutton) handleNextLetter();
       if (shiftKey) handleShowHint();
     }
 
     if (gameMode === 'hit') {
-      if (enterKey) handleNextLetter();
-      // update good and wrong answer
-      // animate and show good answer
+      if (enterKey) {
+        handleNextLetter();
+      }
+      handleEnableNextbutton()
     }
 
 
@@ -77,7 +88,7 @@ function Game() {
 
   return (
     <main className="game-container">
-      <nav  onChange={handleGameMode} >
+      <nav  onChange={changeGameMode} >
         <input type="radio" name="mode" value="reveal" checked={gameMode === 'reveal'} readOnly/> Modo Revelar
         {/* <label htmlFor="revealMode">Modo Revelar</label> */}
         <input type="radio" name="mode" value="hit" checked={gameMode === 'hit'} readOnly/> Modo Acerta
@@ -125,7 +136,7 @@ function Game() {
               text="SIGUIENTE"
               secondary={true}
               handler={handleNextLetter}
-              disabled={!isCorrectAnswer}
+              disabled={!enableNextbutton}
               data-next-id="next"
               title="Tienes que adivinar o revelar la letra para avanzar."
             />

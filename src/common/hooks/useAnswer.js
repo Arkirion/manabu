@@ -3,34 +3,44 @@ import { sanatizeImageName } from "../utils/utils";
 
 
 export const useAnswer = () => {
-  const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
+  // const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
+  const [enableNextbutton, setEnableNextbutton] = useState(false);
   const [answer, setAnswer] = useState("");
   const [showHint, setShowHint] = useState(false);
+  const [gameMode, setGameMode] = useState('reveal');
 
   const resetAnswer = ({
     showHintValue = false,
     emptyAnswer = true,
-    correctAnswer = false,
   } ) => {
-    console.log('nani?')
-    // console.log(showHintValue)
     setShowHint(showHintValue);
     if (emptyAnswer) {
       setAnswer("");
     }
-    setIsCorrectAnswer(correctAnswer);
+    handleEnableNextbutton(false); // always false if reveal, always true if hit, fix semantic
   };
 
-  // refactor to be more semantic and logic correct, so we should set an state called "isCorrectAnswer" and "enableNextbutton"
-  const handleShowIsCorrectAnswer = (state = true) => {
-    setIsCorrectAnswer(state)
+  const handleGameMode = (gameMode) => {
+    // validate between reveal and hit
+    setGameMode(gameMode)
   }
 
-  const checkAnswer = (e, answerToCheck, gameMode = 'reveal') => {
+  const handleEnableNextbutton = (state = true) => {
+    if (gameMode === 'reveal') {
+      setEnableNextbutton(state)
+    }
+
+    if (gameMode === 'hit') {
+      setEnableNextbutton(true) // always enabled
+    }
+  }
+
+  const checkAnswer = (e, answerToCheck) => {
     const name = e.target.value.toUpperCase();
     setAnswer(name);
     const match = name === sanatizeImageName(answerToCheck);
-    return gameMode=== 'reveal' ? setIsCorrectAnswer(match): setIsCorrectAnswer(false);
+    setCorrectAnswer(match);
+    handleEnableNextbutton(match);
   };
 
   const handleShowHint = (show = true ) => {
@@ -38,12 +48,14 @@ export const useAnswer = () => {
   };
 
   return {
-    answer,
-    isCorrectAnswer,
+    correctAnswer,
+    gameMode,
+    enableNextbutton,
     showHint,
+    handleGameMode,
     resetAnswer,
     checkAnswer,
     handleShowHint,
-    handleShowIsCorrectAnswer
+    handleEnableNextbutton
   };
 };
