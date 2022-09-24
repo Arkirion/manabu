@@ -10,7 +10,7 @@ import { hiraganaImageRoute } from "../../common/utils/constants";
 import { hiddingVariants } from "../../common/utils/animations";
 
 import { useSuffle } from "../../common/hooks/useSuffle";
-import { useAnswer } from "../../common/hooks/useAnswer";
+import { useAnswer, EMPTY, GAME_MODES } from "../../common/hooks/useAnswer";
 
 function Game() {
   const { suffle, imageName, suffleFromScratch, nextLetter } = useSuffle();
@@ -22,9 +22,9 @@ function Game() {
     enableNextbutton,
     correctAnswerCounter,
     showHint,
+    resetAllValues,
     checkAnswer,
     handleInputValue,
-    handleEnableNextbutton,
     handleShowHint,
     handleGameMode,
   } = useAnswer();
@@ -35,33 +35,15 @@ function Game() {
     const mode = e.target.value;
     handleGameMode(mode);
     suffleFromScratch();
-
-    if (mode === 'hit') {
-      handleEnableNextbutton(true)
-      handleInputValue('')
-    } 
-
-    if (mode === 'reveal') {
-      handleEnableNextbutton(false)
-      handleInputValue('')
-      handleShowHint(false)
-    } 
   };
-
 
   const handleReset = () => {
     suffleFromScratch();
-
-    gameMode === 'reveal' && handleEnableNextbutton(false)
-    handleInputValue('')
-    handleShowHint(false)
+    resetAllValues(gameMode)
   };
 
   const handleNextLetter = () => {
     nextLetter(suffle);
-    handleInputValue('')
-    gameMode === 'reveal' && handleEnableNextbutton(false)
-    gameMode === 'reveal' && handleShowHint(false)
     inputRef.current.focus();
   };
 
@@ -69,32 +51,34 @@ function Game() {
     const enterKey = e.keyCode == 13;
     const shiftKey = e.keyCode == 16;
 
-    if (gameMode === 'reveal') {
+    if (gameMode === GAME_MODES.reveal) {
+      // we only need reset input to get better sensation
       if (enterKey && !correctAnswer) {
-        handleInputValue('')
+        // TODO: put on red when fail.
+        handleInputValue('') 
       } 
       if (enterKey && correctAnswer) {
+        resetAllValues(gameMode)
         handleNextLetter();
       }
 
       if (shiftKey) handleShowHint(true);
     }
 
-    if (gameMode === 'hit') {
-      if (enterKey) {
-        handleInputValue('')
+    if (gameMode === GAME_MODES.hit) {
+      if (enterKey && input !== '') {
+        resetAllValues(gameMode)
         handleNextLetter();
       }
     }
-
     inputRef.current.focus();
   };
 
   return (
     <main className="game-container">
       <nav  onChange={changeGameMode} >
-        <input type="radio" name="mode" value="reveal" checked={gameMode === 'reveal'} readOnly/> Modo Revelar
-        <input type="radio" name="mode" value="hit" checked={gameMode === 'hit'} readOnly/> Modo Acertar
+        <input type="radio" name="mode" value={GAME_MODES.reveal} checked={gameMode === GAME_MODES.reveal} readOnly/> Modo Revelar
+        <input type="radio" name="mode" value={GAME_MODES.hit} checked={gameMode === GAME_MODES.hit} readOnly/> Modo Acertar
       </nav>
       <small>
         {" Intenta adivinar la letra! "}
@@ -111,7 +95,7 @@ function Game() {
               transition={{ delay: 0.01 }}
             />
             <motion.small
-              style={gameMode === 'reveal' ? {visibility: 'visible'} : {visibility: 'hidden'}}
+              style={gameMode === GAME_MODES.reveal ? {visibility: 'visible'} : {visibility: 'hidden'}}
               variants={hiddingVariants}
               initial={{ opacity: 0 }}
               animate={!showHint ? "hidden" : "visible"}
@@ -120,7 +104,7 @@ function Game() {
             </motion.small>
           </div>
           <section>
-              <Button style={gameMode === 'reveal' ? {visibility: 'visible'} : {visibility: 'hidden'}} text="REVELAR" handler={() => handleShowHint(true)} />
+              <Button style={gameMode === GAME_MODES.reveal ? {visibility: 'visible'} : {visibility: 'hidden'}} text="REVELAR" handler={() => handleShowHint(true)} />
             <legend>Escribe la letra en hiragana.</legend>
             <input
               ref={inputRef}

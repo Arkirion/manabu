@@ -1,47 +1,60 @@
 import { useState, useEffect } from "react";
 import { sanatizeImageName } from "../utils/utils";
 
+export const EMPTY = "";
+export const GAME_MODES = {
+  reveal: "reveal",
+  hit: "hit",
+};
 
 export const useAnswer = () => {
-  // const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
   const [enableNextbutton, setEnableNextbutton] = useState(false);
   const [correctAnswer, setCorrectAnswer] = useState(false);
   const [correctAnswerCounter, setCorrectAnswerCounter] = useState(0);
-  // const [answer, setAnswer] = useState("");
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(EMPTY);
   const [showHint, setShowHint] = useState(false);
-  const [gameMode, setGameMode] = useState('reveal');
+  const [gameMode, setGameMode] = useState(GAME_MODES.reveal);
 
   useEffect(() => {
     if (correctAnswer) {
-      setEnableNextbutton(true)
-      setCorrectAnswerCounter(correctAnswerCounter + 1)
+      setEnableNextbutton(true);
+      setCorrectAnswerCounter(correctAnswerCounter + 1);
     } else {
-      setEnableNextbutton(false)
+      setEnableNextbutton(false);
     }
   }, [correctAnswer]);
 
   useEffect(() => {
     if (!enableNextbutton) {
-      setCorrectAnswer(false)
+      setCorrectAnswer(false);
     }
 
-    if (gameMode === 'hit') {
-      setEnableNextbutton(true)
+    if (gameMode === GAME_MODES.hit) {
+      setEnableNextbutton(true);
     }
   }, [enableNextbutton]);
 
-  const handleInputValue = (value) => setInput(value); 
-  const handleEnableNextbutton = (state) => setEnableNextbutton(state); 
+  // TODO : try to remove gameMode?
+  const resetAllValues = (gameMode) => {
+    handleInputValue(EMPTY);
+    handleShowHint(false);
+
+    if (gameMode === GAME_MODES.reveal)  handleEnableNextbutton(false);
+    if (gameMode === GAME_MODES.hit) handleEnableNextbutton(true);
+  };
+
+  const handleInputValue = (value) => setInput(value);
+  const handleEnableNextbutton = (state) => setEnableNextbutton(state);
   const handleShowHint = (showHint) => setShowHint(showHint);
   const handleGameMode = (gameMode) => {
-    setGameMode(gameMode)
-    setCorrectAnswerCounter(0)
-  }
+    setGameMode(gameMode);
+    setCorrectAnswerCounter(0);
+    resetAllValues(gameMode);
+  };
 
   const checkAnswer = (e, answerToCheck) => {
     const name = e.target.value.toUpperCase();
-    handleInputValue(name)
+    handleInputValue(name);
     const match = name === sanatizeImageName(answerToCheck);
     setCorrectAnswer(match);
   };
@@ -53,9 +66,9 @@ export const useAnswer = () => {
     enableNextbutton,
     showHint,
     correctAnswerCounter,
+    resetAllValues,
     checkAnswer,
     handleInputValue,
-    handleEnableNextbutton,
     handleShowHint,
     handleGameMode,
   };
