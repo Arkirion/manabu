@@ -1,61 +1,62 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { sanatizeImageName } from "../utils/utils";
 
 
 export const useAnswer = () => {
   // const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
   const [enableNextbutton, setEnableNextbutton] = useState(false);
-  const [answer, setAnswer] = useState("");
+  const [correctAnswer, setCorrectAnswer] = useState(false);
+  const [correctAnswerCounter, setCorrectAnswerCounter] = useState(0);
+  // const [answer, setAnswer] = useState("");
+  const [input, setInput] = useState('');
   const [showHint, setShowHint] = useState(false);
   const [gameMode, setGameMode] = useState('reveal');
 
-  const resetAnswer = ({
-    showHintValue = false,
-    emptyAnswer = true,
-  } ) => {
-    setShowHint(showHintValue);
-    if (emptyAnswer) {
-      setAnswer("");
+  useEffect(() => {
+    if (correctAnswer) {
+      setEnableNextbutton(true)
+      setCorrectAnswerCounter(correctAnswerCounter + 1)
+    } else {
+      setEnableNextbutton(false)
     }
-    handleEnableNextbutton(false); // always false if reveal, always true if hit, fix semantic
-  };
+  }, [correctAnswer]);
 
-  const handleGameMode = (gameMode) => {
-    // validate between reveal and hit
-    setGameMode(gameMode)
-  }
-
-  const handleEnableNextbutton = (state = true) => {
-    if (gameMode === 'reveal') {
-      setEnableNextbutton(state)
+  useEffect(() => {
+    if (!enableNextbutton) {
+      setCorrectAnswer(false)
     }
 
     if (gameMode === 'hit') {
-      setEnableNextbutton(true) // always enabled
+      setEnableNextbutton(true)
     }
+  }, [enableNextbutton]);
+
+  const handleInputValue = (value) => setInput(value); 
+  const handleEnableNextbutton = (state) => setEnableNextbutton(state); 
+  const handleShowHint = (showHint) => setShowHint(showHint);
+  const handleGameMode = (gameMode) => {
+    setGameMode(gameMode)
+    setCorrectAnswerCounter(0)
   }
 
   const checkAnswer = (e, answerToCheck) => {
     const name = e.target.value.toUpperCase();
-    setAnswer(name);
+    handleInputValue(name)
     const match = name === sanatizeImageName(answerToCheck);
     setCorrectAnswer(match);
-    handleEnableNextbutton(match);
-  };
-
-  const handleShowHint = (show = true ) => {
-    setShowHint(show)
   };
 
   return {
-    correctAnswer,
+    input,
     gameMode,
+    correctAnswer,
     enableNextbutton,
     showHint,
-    handleGameMode,
-    resetAnswer,
+    correctAnswerCounter,
     checkAnswer,
+    handleInputValue,
+    handleEnableNextbutton,
     handleShowHint,
-    handleEnableNextbutton
+    handleGameMode,
   };
 };

@@ -18,15 +18,17 @@ function Game() {
 
 
   const {
-    answer,
+    input,
     gameMode,
+    correctAnswer,
     enableNextbutton,
+    correctAnswerCounter,
     showHint,
-    handleGameMode,
-    resetAnswer,
     checkAnswer,
+    handleInputValue,
+    handleEnableNextbutton,
     handleShowHint,
-    handleEnableNextbutton
+    handleGameMode,
   } = useAnswer();
   const inputRef = useRef(null);
 
@@ -36,52 +38,56 @@ function Game() {
     handleGameMode(mode);
     suffleFromScratch();
 
-    // esto podria ir dentro del useAnswer?????
     if (mode === 'hit') {
-      // handleEnableNextbutton(true)
-      resetAnswer({})
       handleEnableNextbutton(true)
+      handleInputValue('')
     } 
-    console.log(mode);
 
     if (mode === 'reveal') {
-      console.log(2, mode);
-
       handleEnableNextbutton(false)
+      handleInputValue('')
+      handleShowHint(false)
     } 
   };
 
 
   const handleReset = () => {
     suffleFromScratch();
-    resetAnswer({});
+
+    gameMode === 'reveal' && handleEnableNextbutton(false)
+    handleInputValue('')
+    handleShowHint(false)
   };
 
   const handleNextLetter = () => {
     nextLetter(suffle);
+    handleInputValue('')
+    gameMode === 'reveal' && handleEnableNextbutton(false)
+    gameMode === 'reveal' && handleShowHint(false)
     inputRef.current.focus();
-
-    resetAnswer({});
   };
 
   const onKeyPressed = (e) => {
     const enterKey = e.keyCode == 13;
     const shiftKey = e.keyCode == 16;
 
-    // esto creo NO puede ir dentro del useAnswer
     if (gameMode === 'reveal') {
-      if (enterKey && !enableNextbutton) resetAnswer({});
-      if (enterKey && enableNextbutton) handleNextLetter();
-      if (shiftKey) handleShowHint();
+      if (enterKey && !correctAnswer) {
+        handleInputValue('')
+      } 
+      if (enterKey && correctAnswer) {
+        handleNextLetter();
+      }
+
+      if (shiftKey) handleShowHint(true);
     }
 
     if (gameMode === 'hit') {
       if (enterKey) {
+        handleInputValue('')
         handleNextLetter();
       }
-      handleEnableNextbutton()
     }
-
 
     inputRef.current.focus();
   };
@@ -90,12 +96,10 @@ function Game() {
     <main className="game-container">
       <nav  onChange={changeGameMode} >
         <input type="radio" name="mode" value="reveal" checked={gameMode === 'reveal'} readOnly/> Modo Revelar
-        {/* <label htmlFor="revealMode">Modo Revelar</label> */}
-        <input type="radio" name="mode" value="hit" checked={gameMode === 'hit'} readOnly/> Modo Acerta
-        {/* <label htmlFor="hitMode">Modo Acertar</label> */}
+        <input type="radio" name="mode" value="hit" checked={gameMode === 'hit'} readOnly/> Modo Acertar
       </nav>
       <small>
-        {" Escribe el nombre de la letra en hiragana e intenta adivinar ! "}
+        {" Intenta adivinar la letra! "}
       </small>
       {suffle.length !== 0 ? (
         <>
@@ -108,27 +112,26 @@ function Game() {
               exit={{ y: 30 }}
               transition={{ delay: 0.01 }}
             />
-            {gameMode === 'reveal' &&
-              <motion.small
-                variants={hiddingVariants}
-                initial={{ opacity: 0 }}
-                animate={!showHint ? "hidden" : "visible"}
-              >
-                {sanatizeImageName(imageName)}
-              </motion.small>
-            }
+            <motion.small
+              style={gameMode === 'reveal' ? {visibility: 'visible'} : {visibility: 'hidden'}}
+              variants={hiddingVariants}
+              initial={{ opacity: 0 }}
+              animate={!showHint ? "hidden" : "visible"}
+            >
+              {sanatizeImageName(imageName)}
+            </motion.small>
           </div>
           <section>
-            { gameMode === 'reveal' &&
-              <Button text="REVELAR" handler={() => handleShowHint()} />
-            }
-            <legend>Escribe letra en hiragana.</legend>
+            {/* { gameMode === 'reveal' && */}
+              <Button style={gameMode === 'reveal' ? {visibility: 'visible'} : {visibility: 'hidden'}} text="REVELAR" handler={() => handleShowHint(true)} />
+            {/* } */}
+            <legend>Escribe la letra en hiragana.</legend>
             <input
               ref={inputRef}
               autoFocus
               type="text"
               placeholder="Escribe tu respuesta aquí"
-              value={answer}
+              value={input}
               onChange={(e) => checkAnswer(e, imageName)}
               onKeyDown={(e) => onKeyPressed(e)}
             />
@@ -144,8 +147,9 @@ function Game() {
         </>
       ) : (
         <span>
-          {
-            " Has completado todas las letras, empieza de nuevo apretando 'Reset' "
+          {gameMode === 'reveal' ?
+              "Has completado todas las letras, empieza de nuevo presionando 'Reset' " :
+              `Has terminado! has acertado ${correctAnswerCounter} letras!, empieza de nuevo presionando "Reset"`
           }
         </span>
       )}
