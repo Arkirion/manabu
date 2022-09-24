@@ -14,9 +14,7 @@ import { useAnswer } from "../../common/hooks/useAnswer";
 
 function Game() {
   const { suffle, imageName, suffleFromScratch, nextLetter } = useSuffle();
-  // const [gameMode, setGameMode] = useState('reveal');
-
-
+  
   const {
     input,
     gameMode,
@@ -122,9 +120,7 @@ function Game() {
             </motion.small>
           </div>
           <section>
-            {/* { gameMode === 'reveal' && */}
               <Button style={gameMode === 'reveal' ? {visibility: 'visible'} : {visibility: 'hidden'}} text="REVELAR" handler={() => handleShowHint(true)} />
-            {/* } */}
             <legend>Escribe la letra en hiragana.</legend>
             <input
               ref={inputRef}
