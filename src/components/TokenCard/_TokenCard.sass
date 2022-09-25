@@ -1,0 +1,17 @@
+@use '../../common/sass/_colors' as color
+
+.token
+  display: flex
+  flex-direction: column
+  align-content: center
+  justify-content: center
+  margin-top: 2rem
+  & img
+    height: 100px
+    object-fit: scale-down
+  & small
+    text-transform: uppercase
+    font-weight: bolder
+    font-size: 1.3rem
+    margin-top: 1rem
+    color: color.$primary

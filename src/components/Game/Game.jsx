@@ -1,20 +1,21 @@
-import React, { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useRef } from "react";
 import "./_Game.sass";
 
 import Button from "../Button/Button";
+import FinalMessage from "../FinalMessage/FinalMessage";
 
 import { hiragana } from "../../common/utils/maps";
-import { sanatizeImageName } from "../../common/utils/utils";
-import { hiraganaImageRoute } from "../../common/utils/constants";
-import { hiddingVariants } from "../../common/utils/animations";
+import { hideElement } from "../../common/utils/utils";
 
 import { useSuffle } from "../../common/hooks/useSuffle";
 import { useAnswer, EMPTY, GAME_MODES } from "../../common/hooks/useAnswer";
 
+import TokenCard from "../TokenCard/TokenCard";
+import HeaderCard from "../HeaderCard/HeaderCard";
+
 function Game() {
   const { suffle, imageName, suffleFromScratch, nextLetter } = useSuffle();
-  
+
   const {
     input,
     gameMode,
@@ -30,7 +31,6 @@ function Game() {
   } = useAnswer();
   const inputRef = useRef(null);
 
-
   const changeGameMode = (e) => {
     const mode = e.target.value;
     handleGameMode(mode);
@@ -39,7 +39,7 @@ function Game() {
 
   const handleReset = () => {
     suffleFromScratch();
-    resetAllValues(gameMode)
+    resetAllValues(gameMode);
   };
 
   const handleNextLetter = () => {
@@ -55,10 +55,10 @@ function Game() {
       // we only need reset input to get better sensation
       if (enterKey && !correctAnswer) {
         // TODO: put on red when fail.
-        handleInputValue('') 
-      } 
+        handleInputValue(EMPTY);
+      }
       if (enterKey && correctAnswer) {
-        resetAllValues(gameMode)
+        resetAllValues(gameMode);
         handleNextLetter();
       }
 
@@ -66,8 +66,8 @@ function Game() {
     }
 
     if (gameMode === GAME_MODES.hit) {
-      if (enterKey && input !== '') {
-        resetAllValues(gameMode)
+      if (enterKey && input !== EMPTY) {
+        resetAllValues(gameMode);
         handleNextLetter();
       }
     }
@@ -76,35 +76,16 @@ function Game() {
 
   return (
     <main className="game-container">
-      <nav  onChange={changeGameMode} >
-        <input type="radio" name="mode" value={GAME_MODES.reveal} checked={gameMode === GAME_MODES.reveal} readOnly/> Modo Revelar
-        <input type="radio" name="mode" value={GAME_MODES.hit} checked={gameMode === GAME_MODES.hit} readOnly/> Modo Acertar
-      </nav>
-      <small>
-        {" Intenta adivinar la letra! "}
-      </small>
+      <HeaderCard onChangeHandler={changeGameMode} gameMode={ gameMode } />
       {suffle.length !== 0 ? (
         <>
-          <div className="token">
-            <motion.img
-              src={`${hiraganaImageRoute}${imageName}.png`}
-              key={suffle} // add key to re-render and trigger animation
-              initial={{ y: -30 }}
-              animate={{ y: 0 }}
-              exit={{ y: 30 }}
-              transition={{ delay: 0.01 }}
-            />
-            <motion.small
-              style={gameMode === GAME_MODES.reveal ? {visibility: 'visible'} : {visibility: 'hidden'}}
-              variants={hiddingVariants}
-              initial={{ opacity: 0 }}
-              animate={!showHint ? "hidden" : "visible"}
-            >
-              {sanatizeImageName(imageName)}
-            </motion.small>
-          </div>
+          <TokenCard name={imageName} gameMode={gameMode} showHint={showHint} />
           <section>
-              <Button style={gameMode === GAME_MODES.reveal ? {visibility: 'visible'} : {visibility: 'hidden'}} text="REVELAR" handler={() => handleShowHint(true)} />
+            <Button
+              style={{ ...hideElement(gameMode === GAME_MODES.reveal) }}
+              text="REVELAR"
+              handler={() => handleShowHint(true)}
+            />
             <legend>Escribe la letra en hiragana.</legend>
             <input
               ref={inputRef}
@@ -126,12 +107,7 @@ function Game() {
           </section>
         </>
       ) : (
-        <span>
-          {gameMode === 'reveal' ?
-              "Has completado todas las letras, empieza de nuevo presionando 'Reset' " :
-              `Has terminado! has acertado ${correctAnswerCounter} letras!, empieza de nuevo presionando "Reset"`
-          }
-        </span>
+        <FinalMessage gameMode={gameMode} counter={correctAnswerCounter} />
       )}
       <footer>
         <Button text="RESET" secondary={true} handler={() => handleReset()} />

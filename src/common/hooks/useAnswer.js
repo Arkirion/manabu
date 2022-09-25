@@ -15,6 +15,7 @@ export const useAnswer = () => {
   const [showHint, setShowHint] = useState(false);
   const [gameMode, setGameMode] = useState(GAME_MODES.reveal);
 
+  /** This avoid enablement bug since correctAnswer is asyncronic. */
   useEffect(() => {
     if (correctAnswer) {
       setEnableNextbutton(true);
@@ -24,6 +25,8 @@ export const useAnswer = () => {
     }
   }, [correctAnswer]);
 
+  
+  /** This avoid enablement bug since correctAnswer is asyncronic. */
   useEffect(() => {
     if (!enableNextbutton) {
       setCorrectAnswer(false);

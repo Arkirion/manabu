@@ -3,7 +3,7 @@
 @use '../../common/sass/_mediaQueries' as *
 
 
-main
+.game-container
   margin: 3rem auto
   padding: 2rem
   max-width: 30rem
@@ -15,21 +15,9 @@ main
 
   @include media(mobile)
     padding: 0.5rem
-    // box-shadow: none
     max-width: 85%
 
-  small
-    text-align: center
-
-  & nav
-    display: flex
-    justify-items: center
-    justify-content: center
-    align-items: center
-    & input 
-      margin: 0 1rem
-
-  & input
+  input
     height: 2.5rem
     font-size: 2rem
     text-align: center
@@ -41,32 +29,16 @@ main
   .hidden
     visibility: hidden
 
-  .token
-    display: flex
-    flex-direction: column
-    align-content: center
-    justify-content: center
-    margin-top: 2rem
-    & img
-      height: 100px
-      object-fit: scale-down
-    & small
-      text-transform: uppercase
-      font-weight: bolder
-      font-size: 1.3rem
-      margin-top: 1rem
-      color: color.$primary
-
-  & section
+  section
     display: inherit
     flex-direction: column
     padding: 0.2rem 6rem
     min-width: 60%
     @include media(mobile)
       padding: 0.2rem 3rem
-    & button
+    button
       margin: 0.5rem 0rem  
-    & legend
+    legend
       text-align: center
       margin-top: 0.5rem
       @include media(mobile)

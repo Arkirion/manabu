@@ -22,3 +22,7 @@ export const sanatizeImageName = (imageName) => {
   }
   return letterName;
 }
+
+export const hideElement = (condition) => {
+  return condition ? { visibility: "visible" } : { visibility: "hidden" };
+};
